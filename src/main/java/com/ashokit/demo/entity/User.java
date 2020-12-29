@@ -24,8 +24,8 @@ public class User {
 	private Long phoneNum;
 	private Date dateOfBirth;
 	private String gender;
-	private Country country;
-	private State state;
-	private City city;
+	private String country;
+	private String state;
+	private String city;
 	private String accntStatus;
 }

@@ -32,6 +32,7 @@ public class RegisterRestController {
 	
 	@GetMapping("/isEmailUnique/{email}")
 	public boolean isEmailUnique(@PathVariable("email") String email) {
+		
 		return userService.isEmailUnique(email);
 	}
 }
