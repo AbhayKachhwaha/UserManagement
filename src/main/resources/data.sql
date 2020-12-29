@@ -1,0 +1,1 @@
+Insert into user values (1, 'Abh', 'ay', 'asd@gmail.com', null , 123213, null, 'Male', 'IN', 'RA', 123, 'LOCKED')

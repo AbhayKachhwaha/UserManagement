@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.ashokit.demo.entity.City;
@@ -54,7 +53,12 @@ public class UserServiceImpl implements UserService {
 		
 		User userByEmail = userRepo.findByEmail(email);
 		
-		return userByEmail.getUserId()==null;
+		if(userByEmail!=null) {
+			return false;
+		} else {
+			return true;
+		}
+		
 	}
 
 	@Override
