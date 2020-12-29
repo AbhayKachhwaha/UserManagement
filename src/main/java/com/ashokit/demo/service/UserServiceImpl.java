@@ -1,6 +1,7 @@
 package com.ashokit.demo.service;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	UserRepo userRepo;
+	
+	@Autowired
+	EmailService emailService;
 	
 	@Override
 	public Map<Integer, String> findCountries() {
@@ -65,13 +69,24 @@ public class UserServiceImpl implements UserService {
 	public String register(User user) {
 		
 		//Generate Password
-		String generatePassword = "";
+		String generatePassword = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		char[] generatedPassword = new char[8];
+				
+		Random random = new Random();
+		
+		for(int i = 0; i < 8; i++) {
+	         generatedPassword[i] = generatePassword.charAt(random.nextInt(generatePassword.length()));
+	    }
+		
+		StringBuilder sbf = new StringBuilder(""); 
+		
+		System.out.println(sbf.append(generatedPassword));
 		
 		//Insert into User table with the generated password
-		user.setPassword(generatePassword);
+		user.setPassword(sbf.toString());
 		
 		//Send Email
-		
+		emailService.sendUnlockEmail(user, generatedPassword.toString());
 		
 		return "Please check your email to unlock your account";
 	}
@@ -102,8 +117,10 @@ public class UserServiceImpl implements UserService {
 			
 			//Update the account with new pwd and status
 			
+			
+			return "‘Account unlocked, please proceed with login";
 		}
-		return "‘Account unlocked, please proceed with login";
+		
 	}
 
 	@Override
