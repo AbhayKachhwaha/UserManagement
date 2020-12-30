@@ -36,7 +36,7 @@ public class EmailServiceImpl implements EmailService {
 					line = line.replace("{LNAME}",user.getLastName());
 				}
 				
-				if(line.contains("${TEMP-PWD}")){
+				if(line.contains("{TEMP-PWD}")){
 				     line = line.replace("{TEMP-PWD}", user.getPassword());
 				}
 
