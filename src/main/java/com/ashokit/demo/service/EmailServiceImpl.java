@@ -6,6 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.ashokit.demo.entity.User;
@@ -13,8 +19,40 @@ import com.ashokit.demo.entity.User;
 @Service
 public class EmailServiceImpl implements EmailService {
 
+	@Autowired
+	JavaMailSender mailSender;
+	
 	@Override
-	public String sendUnlockEmail(User user, String tempPassword) {
+	public boolean sendEmail(String to, String body, String subject) {
+		
+		try {
+			MimeMessage mailMessage = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(mailMessage);
+			
+			helper.setTo(to);
+			helper.setSubject(subject);
+			helper.setText(body, true);
+			helper.setFrom("noreply@ies.com");
+			
+			mailSender.send(mailMessage);
+			
+			return true;
+			
+		} catch (MessagingException e) {
+			
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public String getForgotPasswordBody(String email, String password) {
+		
+		return "The password for your ID: "+password;
+	}
+
+	@Override
+	public String getUnlockEmailBody(User user, String tempPassword) {
 		
 		File unlkAccntEmail = new File("UNLOCK-ACC-EMAIL-BODY-TEMPLATE.TXT");
 		
@@ -36,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
 					line = line.replace("{LNAME}",user.getLastName());
 				}
 				
-				if(line.contains("${TEMP-PWD}")){
+				if(line.contains("{TEMP-PWD}")){
 				     line = line.replace("{TEMP-PWD}", user.getPassword());
 				}
 
@@ -49,8 +87,7 @@ public class EmailServiceImpl implements EmailService {
 				line = br.readLine();
 			}
 			
-			return sb.toString();
-			
+			br.close();
 		} catch (FileNotFoundException e) {
 			
 			e.printStackTrace();
@@ -58,14 +95,7 @@ public class EmailServiceImpl implements EmailService {
 			
 			e.printStackTrace();
 		}
-		
-		return "Check your email to unlock your account.";
-	}
-
-	@Override
-	public String sendForgotPasswordEmail(String email, String password) {
-		
-		return null;
+		return sb.toString();
 	}
 
 }
