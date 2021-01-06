@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Data;
 
@@ -22,6 +24,7 @@ public class User {
 	private String email;
 	private String password;
 	private Long phoneNum;
+	@Temporal(TemporalType.DATE)
 	private Date dateOfBirth;
 	private String gender;
 	private String country;

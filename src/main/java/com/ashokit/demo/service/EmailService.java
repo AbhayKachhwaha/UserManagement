@@ -4,6 +4,7 @@ import com.ashokit.demo.entity.User;
 
 public interface EmailService {
 	
-	public String sendUnlockEmail(User user, String tempPassword);
-	public String sendForgotPasswordEmail(String email, String password);
+	public boolean sendEmail(String to, String body, String subject);
+	public String getForgotPasswordBody(String email, String password);
+	public String getUnlockEmailBody(User user, String tempPassword);
 }

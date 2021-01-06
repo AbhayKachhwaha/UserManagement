@@ -78,15 +78,19 @@ public class UserServiceImpl implements UserService {
 	         generatedPassword[i] = generatePassword.charAt(random.nextInt(generatePassword.length()));
 	    }
 		
-		StringBuilder sbf = new StringBuilder(""); 
+		StringBuilder sbf = new StringBuilder("");
 		
 		System.out.println(sbf.append(generatedPassword));
 		
 		//Insert into User table with the generated password
 		user.setPassword(sbf.toString());
+		user.setAccntStatus("LOCKED");
+		
+		userRepo.save(user);
 		
 		//Send Email
-		emailService.sendUnlockEmail(user, generatedPassword.toString());
+		String body = emailService.getUnlockEmailBody(user, generatedPassword.toString());
+		emailService.sendEmail(user.getEmail(), body, "Unlock IES Account");
 		
 		return "Please check your email to unlock your account";
 	}
@@ -109,6 +113,10 @@ public class UserServiceImpl implements UserService {
 		
 		User userDetails = userRepo.findByEmail(email);
 		
+		if(!tempPassword.equals(userDetails.getPassword())) {
+			return "Temporary Password is not valid";
+		}
+		
 		if(userDetails.getAccntStatus().equalsIgnoreCase("UNLOCKED")) {
 			return "This account is already unlocked";
 		} else {
@@ -116,7 +124,7 @@ public class UserServiceImpl implements UserService {
 			userDetails.setAccntStatus("UNLOCKED");
 			
 			//Update the account with new pwd and status
-			
+			userRepo.save(userDetails);
 			
 			return "‘Account unlocked, please proceed with login";
 		}
@@ -130,7 +138,7 @@ public class UserServiceImpl implements UserService {
 		if(userDetails.getUserId()!= null) {
 			String password = userDetails.getPassword();
 			//send Email with Password
-			
+			emailService.sendEmail(email, emailService.getForgotPasswordBody(email, password), "Password Recovery:User Management App");
 			return "Password has been sent to your email";
 		} else {
 			return "Email is not registered";
