@@ -17,3 +17,16 @@ spring:
     port: 587
     username: 
     password: 
+    
+userMng:
+  messages:
+    invalidCred: Invalid Credentials
+    accntLkd: Account Locked
+    succMsg: Welcome to Ashok IT!
+    tmpPassErr: Temporary Password is not valid
+    accntUnlkErr: This account is already unlocked
+    accntUnlkSucc: Account unlocked, please proceed with login
+    notFndErr: User not found
+    frgtPassErr: Email is not registered
+    frgtPassSucc: Password has been sent to your email
+    registerSucc: Please check your email to unlock your account

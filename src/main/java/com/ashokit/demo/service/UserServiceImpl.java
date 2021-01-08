@@ -92,19 +92,20 @@ public class UserServiceImpl implements UserService {
 		String body = emailService.getUnlockEmailBody(user, generatedPassword.toString());
 		emailService.sendEmail(user.getEmail(), body, "Unlock IES Account");
 		
-		return "Please check your email to unlock your account";
+		return "registerSucc";
 	}
 
 	@Override
 	public String signIn(String email, String password) {
 		
 		User userDetails = userRepo.findByEmailAndPassword(email, password);
-		if(userDetails.getUserId()==null) {
-			return "Invalid Credentials";
+		
+		if(userDetails==null) {
+			return "invalidCred";
 		} else if(userDetails.getAccntStatus().equalsIgnoreCase("Locked")) {
-			return "Account Locked";
+			return "accntLkd";
 		} else {
-			return "Welcome to Ashok IT!";
+			return "succMsg";
 		}
 	}
 
@@ -113,35 +114,38 @@ public class UserServiceImpl implements UserService {
 		
 		User userDetails = userRepo.findByEmail(email);
 		
-		if(!tempPassword.equals(userDetails.getPassword())) {
-			return "Temporary Password is not valid";
+		if(userDetails != null) {
+			if(!tempPassword.equals(userDetails.getPassword())) {
+				return "tmpPassErr";
+			}
+			
+			if(userDetails.getAccntStatus().equalsIgnoreCase("UNLOCKED")) {
+				return "accntUnlkErr";
+			} else {
+				userDetails.setPassword(newPassword);
+				userDetails.setAccntStatus("UNLOCKED");
+				
+				//Update the account with new pwd and status
+				userRepo.save(userDetails);
+				
+				return "accntUnlkSucc";
+			}
 		}
 		
-		if(userDetails.getAccntStatus().equalsIgnoreCase("UNLOCKED")) {
-			return "This account is already unlocked";
-		} else {
-			userDetails.setPassword(newPassword);
-			userDetails.setAccntStatus("UNLOCKED");
-			
-			//Update the account with new pwd and status
-			userRepo.save(userDetails);
-			
-			return "‘Account unlocked, please proceed with login";
-		}
-		
+		return "notFndErr";
 	}
 
 	@Override
 	public String forgotPassword(String email) {
 		
 		User userDetails = userRepo.findByEmail(email);
-		if(userDetails.getUserId()!= null) {
+		if(userDetails != null) {
 			String password = userDetails.getPassword();
 			//send Email with Password
 			emailService.sendEmail(email, emailService.getForgotPasswordBody(email, password), "Password Recovery:User Management App");
-			return "Password has been sent to your email";
+			return "frgtPassSucc";
 		} else {
-			return "Email is not registered";
+			return "frgtPassErr";
 		}
 	}
 
